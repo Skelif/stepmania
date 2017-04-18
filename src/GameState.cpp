@@ -107,7 +107,7 @@ static ThemeMetric<bool> ARE_STAGE_SONG_MODS_FORCED	("GameState","AreStageSongMo
 
 static Preference<Premium> g_Premium( "Premium", Premium_DoubleFor1Credit );
 Preference<bool> GameState::m_bAutoJoin( "AutoJoin", false );
-Preference<bool> GameState::m_bOverrideChordCohesion("OverrideChordCohesion", false);
+Preference<bool> GameState::m_bOverrideChordCohesion("OverrideChordCohesion", true);
 
 GameState::GameState() :
 	processedTiming( NULL ),
