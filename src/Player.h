@@ -138,8 +138,10 @@ public:
 	size_t nervpos = 0; // where we are in the non-empty row vector
 	float maxwifescore = 0.0001f; // hurr /0 - Mina
 	float curwifescore = 0.f;
+	float curunscaledwifescore = 0.f;
 	float wifescorepersonalbest = 0.f;
 	int totalwifescore;
+	int totalunscaledwifescore;
 
 protected:
 	void UpdateTapNotesMissedOlderThan( float fMissIfOlderThanThisBeat );

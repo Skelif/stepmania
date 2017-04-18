@@ -124,6 +124,7 @@ struct HighScore
 
 	// Mina stuff - Mina
 	float RescoreToWifeJudge(int x);
+	float RescoreToUnscaledWifeJudge(int x);
 	float RescoreToDPJudge(int x);
 	float GetSkillsetSSR(Skillset ss) const;
 	void SetSkillsetSSR(Skillset ss, float ssr);

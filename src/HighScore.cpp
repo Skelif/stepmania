@@ -776,10 +776,27 @@ float HighScore::RescoreToWifeJudge(int x) {
 	const float tso[] = { 1.50f,1.33f,1.16f,1.00f,0.84f,0.66f,0.50f,0.33f,0.20f };
 	float ts = tso[x-1];
 	float p = 0;
+	map<int, int> rows;
+	FOREACH_CONST(int, m_Impl->vNoteRowVector, row)
+		++rows[*row];
+	for (int i = 0; i < m_Impl->vOffsetVector.size(); ++i)
+		p += wife2(m_Impl->vOffsetVector[i], ts) / rows[m_Impl->vNoteRowVector[i]];
+
+	p += (m_Impl->iHoldNoteScores[HNS_LetGo] + m_Impl->iHoldNoteScores[HNS_Missed]) * -6.f + m_Impl->iTapNoteScores[TNS_HitMine] * -8;
+	return p / static_cast<float>(rows.size() * 2);
+}
+
+float HighScore::RescoreToUnscaledWifeJudge(int x) {
+	if (!LoadReplayData())
+		return m_Impl->fWifeScore;
+
+	const float tso[] = { 1.50f,1.33f,1.16f,1.00f,0.84f,0.66f,0.50f,0.33f,0.20f };
+	float ts = tso[x - 1];
+	float p = 0;
 	FOREACH_CONST(float, m_Impl->vOffsetVector, f)
 		p += wife2(*f, ts);
 
-	p += (m_Impl->iHoldNoteScores[HNS_LetGo] + m_Impl->iHoldNoteScores[HNS_Missed]) * -6.f;
+	p += (m_Impl->iHoldNoteScores[HNS_LetGo] + m_Impl->iHoldNoteScores[HNS_Missed]) * -6.f + m_Impl->iTapNoteScores[TNS_HitMine] * -8;
 	return p / static_cast<float>(m_Impl->vOffsetVector.size() * 2);
 }
 
@@ -921,6 +938,7 @@ public:
 	static int GetTapNoteScore( T* p, lua_State *L )		{ lua_pushnumber(L, p->GetTapNoteScore( Enum::Check<TapNoteScore>(L, 1) ) ); return 1; }
 	static int GetHoldNoteScore( T* p, lua_State *L )		{ lua_pushnumber(L, p->GetHoldNoteScore( Enum::Check<HoldNoteScore>(L, 1) ) ); return 1; }
 	static int RescoreToWifeJudge(T* p, lua_State *L)		{ lua_pushnumber(L, p->RescoreToWifeJudge(IArg(1))); return 1; }
+	static int RescoreToUnscaledWifeJudge(T* p, lua_State *L) { lua_pushnumber(L, p->RescoreToUnscaledWifeJudge(IArg(1))); return 1; }
 	static int RescoreToDPJudge(T* p, lua_State *L)			{ lua_pushnumber(L, p->RescoreToDPJudge(IArg(1))); return 1; }
 	static int RescoreJudges( T* p, lua_State *L )
 	{
@@ -965,6 +983,7 @@ public:
 		ADD_METHOD( ConvertDpToWife );
 		ADD_METHOD( GetWifeScore );
 		ADD_METHOD( RescoreToWifeJudge );
+		ADD_METHOD( RescoreToUnscaledWifeJudge );
 		ADD_METHOD( RescoreToDPJudge );
 		ADD_METHOD( RescoreJudges );
 		ADD_METHOD( GetSkillsetSSR );

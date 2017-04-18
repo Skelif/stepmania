@@ -29,9 +29,11 @@ public:
 	static RString FormatPercentScore( float fPercentScore );
 	// Calculate the difficulty rating for a specific score obtained by a player - Mina
 	Grade GetWifeGrade();
+	Grade GetUnscaledWifeGrade();
 	vector<float> CalcSSR(float ssrpercent) const;
 	float GetPercentDancePoints() const;
 	float GetWifeScore() const;
+	float GetUnscaledWifeScore() const;
 	float GetTimingScale() const;
 	vector<float> GetOffsetVector() const;
 	vector<int> GetNoteRowVector() const;
@@ -70,6 +72,7 @@ public:
 	int		m_iActualDancePoints;
 	int		m_iPossibleGradePoints;
 	float   m_fWifeScore;
+	float	m_fUnscaledWifeScore;
 	float	m_fTimingScale;
 	vector<float> m_vOffsetVector;
 	vector<int> m_vNoteRowVector;

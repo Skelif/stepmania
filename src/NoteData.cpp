@@ -173,7 +173,7 @@ void NoteData::CopyAll( const NoteData& from )
 	*this = from;
 }
 
-int NoteData::WifeTotalScoreCalc(TimingData *td, int iStartIndex, int iEndIndex)
+int NoteData::WifeTotalScoreCalc(TimingData *td, int iStartIndex, int iEndIndex, bool scaled)
 {
 	int taps = 0;
 	FOREACH_NONEMPTY_ROW_ALL_TRACKS(*this, r) {
@@ -182,7 +182,8 @@ int NoteData::WifeTotalScoreCalc(TimingData *td, int iStartIndex, int iEndIndex)
 			TapNote tn = GetTapNote(t, r);
 			if (tn.type != TapNoteType_Empty && tn.type != TapNoteType_Mine && tn.type != TapNoteType_Fake && td->IsJudgableAtRow(r)) {
 				taps++;
-				break;
+				if (scaled)
+					break;
 			}
 		}
 	}

@@ -169,7 +169,7 @@ public:
 
 	// Mina stuf
 	void LogNonEmptyRows();
-	int WifeTotalScoreCalc(TimingData *td, int iStartIndex = 0, int iEndIndex = MAX_NOTE_ROW);
+	int WifeTotalScoreCalc(TimingData *td, int iStartIndex = 0, int iEndIndex = MAX_NOTE_ROW, bool scaled = true);
 	vector<int>& GetNonEmptyRowVector() { return NonEmptyRowVector; };
 	vector<NoteInfo> SerializeNoteData(const vector<float>& etaner);
 

@@ -676,6 +676,7 @@ void Player::Load()
 		etarD.push_back(m_Timing->GetElapsedTimeFromBeatNoOffset(NoteRowToBeat(i)));
 	m_Timing->SetElapsedTimesAtAllRows(etarD);
 	totalwifescore = m_NoteData.WifeTotalScoreCalc(m_Timing, 0, 1073741824);
+	totalunscaledwifescore = m_NoteData.WifeTotalScoreCalc(m_Timing, 0, 1073741824, false);
 	m_NoteData.LogNonEmptyRows();
 	nerv = m_NoteData.GetNonEmptyRowVector();
 
@@ -3137,8 +3138,10 @@ void Player::SetMineJudgment( TapNoteScore tns , int iTrack )
 		msg.SetParam( "Type", static_cast<RString>("Mine"));
 
 		// Ms scoring implemenation - Mina
-		if (tns == TNS_HitMine)
+		if (tns == TNS_HitMine) {
 			curwifescore -= 8.f;
+			curunscaledwifescore -= 8.f;
+		}
 
 		if (m_pPlayerStageStats) {
 			msg.SetParam("WifePercent", 100 * curwifescore / maxwifescore);
@@ -3148,8 +3151,10 @@ void Player::SetMineJudgment( TapNoteScore tns , int iTrack )
 				msg.SetParam("WifePBDifferential", curwifescore - maxwifescore * wifescorepersonalbest);
 				msg.SetParam("WifePBGoal", wifescorepersonalbest);
 			}
-			if(m_pPlayerState->m_PlayerController == PC_HUMAN)
+			if(m_pPlayerState->m_PlayerController == PC_HUMAN) {
 				m_pPlayerStageStats->m_fWifeScore = curwifescore / totalwifescore;
+				m_pPlayerStageStats->m_fUnscaledWifeScore = curunscaledwifescore / totalunscaledwifescore;
+			}
 		}
 
 		MESSAGEMAN->Broadcast( msg );
@@ -3199,10 +3204,14 @@ void Player::SetJudgment( int iRow, int iTrack, const TapNote &tn, TapNoteScore 
 				scoreWeight /= notes;
 			}
 
-			if (tns == TNS_Miss)
+			if (tns == TNS_Miss) {
 				curwifescore -= 8 * scoreWeight;
-			else
+				curunscaledwifescore -= 8;
+			}
+			else {
 				curwifescore += wife2(tn.result.fTapNoteOffset, m_fTimingWindowScale) * scoreWeight;
+				curunscaledwifescore += wife2(tn.result.fTapNoteOffset, m_fTimingWindowScale);
+			}
 
 			maxwifescore += 2 * scoreWeight;
 			msg.SetParam("WifePercent", 100 * curwifescore / maxwifescore);
@@ -3214,6 +3223,7 @@ void Player::SetJudgment( int iRow, int iTrack, const TapNote &tn, TapNoteScore 
 			}
 			if (m_pPlayerState->m_PlayerController == PC_HUMAN) {
 				m_pPlayerStageStats->m_fWifeScore = curwifescore / totalwifescore;
+				m_pPlayerStageStats->m_fUnscaledWifeScore = curunscaledwifescore / totalunscaledwifescore;
 				m_pPlayerStageStats->m_vOffsetVector.push_back(tn.result.fTapNoteOffset);
 				m_pPlayerStageStats->m_vNoteRowVector.push_back(iRow);
 			}
@@ -3271,8 +3281,10 @@ void Player::SetHoldJudgment( TapNote &tn, int iTrack )
 			msg.SetParam("Val", m_pPlayerStageStats->m_iHoldNoteScores[tn.HoldResult.hns] + 1);
 
 			// Ms scoring implemenation - Mina
-			if (tn.HoldResult.hns == HNS_LetGo || tn.HoldResult.hns == HNS_Missed)
+			if (tn.HoldResult.hns == HNS_LetGo || tn.HoldResult.hns == HNS_Missed) {
 				curwifescore -= 6.f;
+				curunscaledwifescore -= 6.f;
+			}
 
 			msg.SetParam("WifePercent", 100 * curwifescore / maxwifescore);
 			msg.SetParam("WifeDifferential", curwifescore - maxwifescore *  m_pPlayerState->playertargetgoal);
@@ -3281,8 +3293,10 @@ void Player::SetHoldJudgment( TapNote &tn, int iTrack )
 				msg.SetParam("WifePBDifferential", curwifescore - maxwifescore * wifescorepersonalbest);
 				msg.SetParam("WifePBGoal", wifescorepersonalbest);
 			}
-			if (m_pPlayerState->m_PlayerController == PC_HUMAN)
+			if (m_pPlayerState->m_PlayerController == PC_HUMAN) {
 				m_pPlayerStageStats->m_fWifeScore = curwifescore / totalwifescore;
+				m_pPlayerStageStats->m_fUnscaledWifeScore = curunscaledwifescore / totalunscaledwifescore;
+			}
 		}
 			
 		Lua* L = LUA->Get();
